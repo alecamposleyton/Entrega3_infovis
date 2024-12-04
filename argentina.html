@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energía renovable en argentina 1965 - 2021</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        svg {
+            margin: 20px auto;
+            display: block;
+        }
+        .line {
+            fill: none;
+            stroke: steelblue;
+            stroke-width: 3px;
+        }
+        .bar {
+            fill: steelblue;
+        }
+        .axis path,
+        .axis line {
+            fill: none;
+            shape-rendering: crispEdges;
+        }
+        .label {
+            font-size: 12px;
+            text-anchor: middle;
+        }
+    </style>
+</head>
+<body>
+    <h1>Energía renovable en Argentina (1965-2021)</h1>
+
+    <!-- Gráfico de Líneas -->
+    <h2>Evolución del uso de energía renovable</h2>
+    <p>Este gráfico muestra la proporción de energía renovable utilizada en Argentina a lo largo de los años.</p>
+    <div id="chart-line">
+        <svg width="800" height="400"></svg>
+    </div>
+
+    <!-- Gráficos de Barras -->
+    <h2>Tipos de energías a través de los años</h2>
+    <h3>Energía hidroeléctrica</h3>
+    <p>Este gráfico muestra cómo ha evolucionado el uso de la energía hidroeléctrica en Argentina.</p>
+    <div id="chart-hydro">
+        <svg width="800" height="400"></svg>
+    </div>
+    <h3>Energía eólica</h3>
+    <p>Este gráfico muestra cómo ha evolucionado el uso de la energía eólica en Argentina.</p>
+    <div id="chart-wind">
+        <svg width="800" height="400"></svg>
+    </div>
+    <h3>Energía solar</h3>
+    <p>Este gráfico muestra cómo ha evolucionado el uso de la energía solar en Argentina.</p>
+    <div id="chart-solar">
+        <svg width="800" height="400"></svg>
+    </div>
+
+    <script>
+        // Data for Renewable Energy Use (Gráfico de Líneas)
+        const lineData = [
+            {"Year": 1965, "Value": 1.1027236},
+            {"Year": 1966, "Value": 1.0818976},
+            {"Year": 1967, "Value": 1.0765653},
+            {"Year": 1968, "Value": 1.2273394},
+            {"Year": 1969, "Value": 1.0651699},
+            {"Year": 1970, "Value": 1.3534116},
+            {"Year": 1971, "Value": 1.2703215},
+            {"Year": 1972, "Value": 1.2349966},
+            {"Year": 1973, "Value": 2.2836952},
+            {"Year": 1974, "Value": 3.6298018},
+            {"Year": 1975, "Value": 3.862203},
+            {"Year": 1976, "Value": 3.5544236},
+            {"Year": 1977, "Value": 3.9092395},
+            {"Year": 1978, "Value": 5.2276783},
+            {"Year": 1979, "Value": 6.7023063},
+            {"Year": 1980, "Value": 9.552859},
+            {"Year": 1981, "Value": 9.541531},
+            {"Year": 1982, "Value": 11.229479},
+            {"Year": 1983, "Value": 11.303474},
+            {"Year": 1984, "Value": 12.132671},
+            {"Year": 1985, "Value": 12.759556},
+            {"Year": 1986, "Value": 12.298526},
+            {"Year": 1987, "Value": 12.247486},
+            {"Year": 1988, "Value": 8.417367},
+            {"Year": 1989, "Value": 7.5435934},
+            {"Year": 1990, "Value": 10.292679},
+            {"Year": 1991, "Value": 9.081444},
+            {"Year": 1992, "Value": 10.206743},
+            {"Year": 1993, "Value": 12.216533},
+            {"Year": 1994, "Value": 13.306406},
+            {"Year": 1995, "Value": 12.535519},
+            {"Year": 1996, "Value": 10.225038},
+            {"Year": 1997, "Value": 12.514141},
+            {"Year": 1998, "Value": 11.482152},
+            {"Year": 1999, "Value": 9.226557},
+            {"Year": 2000, "Value": 12.283858},
+            {"Year": 2001, "Value": 15.937488},
+            {"Year": 2002, "Value": 16.249306},
+            {"Year": 2003, "Value": 14.408259},
+            {"Year": 2004, "Value": 12.1855755},
+            {"Year": 2005, "Value": 12.788524},
+            {"Year": 2006, "Value": 13.449462},
+            {"Year": 2007, "Value": 10.599154},
+            {"Year": 2008, "Value": 10.437064},
+            {"Year": 2009, "Value": 11.783506},
+            {"Year": 2010, "Value": 11.661375},
+            {"Year": 2011, "Value": 10.929448},
+            {"Year": 2012, "Value": 10.216426},
+            {"Year": 2013, "Value": 10.950079},
+            {"Year": 2014, "Value": 11.038978},
+            {"Year": 2015, "Value": 10.907397},
+            {"Year": 2016, "Value": 10.167007},
+            {"Year": 2017, "Value": 10.964719},
+            {"Year": 2018, "Value": 11.39763},
+            {"Year": 2019, "Value": 11.926772},
+            {"Year": 2020, "Value": 12.179417},
+            {"Year": 2021, "Value": 11.329249}
+        ];
+
+        const margin = { top: 20, right: 30, bottom: 50, left: 50 };
+        const width = 800 - margin.left - margin.right;
+        const height = 400 - margin.top - margin.bottom;
+
+        // Line Chart
+        const svgLine = d3.select("#chart-line svg")
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        const xLine = d3.scaleLinear()
+            .domain(d3.extent(lineData, d => d.Year))
+            .range([0, width]);
+
+        const yLine = d3.scaleLinear()
+            .domain([0, d3.max(lineData, d => d.Value)])
+            .range([height, 0]);
+
+        svgLine.append("g")
+            .attr("transform", `translate(0,${height})`)
+            .call(d3.axisBottom(xLine).ticks(10).tickFormat(d3.format("d")))
+            .append("text")
+            .attr("x", width / 2)
+            .attr("y", 40)
+            .attr("class", "label")
+            .text("Año");
+
+        svgLine.append("g")
+            .call(d3.axisLeft(yLine))
+            .append("text")
+            .attr("x", -height / 2)
+            .attr("y", -40)
+            .attr("transform", "rotate(-90)")
+            .attr("class", "label")
+            .text("Proporción de Energía Renovable (%)");
+
+        svgLine.append("path")
+            .datum(lineData)
+            .attr("class", "line")
+            .attr("d", d3.line()
+                .x(d => xLine(d.Year))
+                .y(d => yLine(d.Value))
+            );
+
+        // Data for Bar Charts
+        const energyData = [
+            {"Year": 1965, "Hydro": 3.2, "Wind": 0.0, "Solar": 0.0},
+            {"Year": 1970, "Hydro": 5.0, "Wind": 0.1, "Solar": 0.0},
+            {"Year": 1980, "Hydro": 8.2, "Wind": 0.3, "Solar": 0.0},
+            {"Year": 1990, "Hydro": 10.5, "Wind": 0.5, "Solar": 0.0},
+            {"Year": 2000, "Hydro": 12.3, "Wind": 1.0, "Solar": 0.2},
+            {"Year": 2010, "Hydro": 15.0, "Wind": 3.0, "Solar": 1.0},
+            {"Year": 2020, "Hydro": 18.5, "Wind": 7.5, "Solar": 5.0}
+        ];
+
+        const energyTypes = ["Hydro", "Wind", "Solar"];
+
+        energyTypes.forEach(energy => {
+            const svg = d3.select(`#chart-${energy.toLowerCase()} svg`)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            const data = energyData.map(d => ({ Year: d.Year, Value: d[energy] || 0 }));
+
+            const x = d3.scaleBand()
+                .domain(data.map(d => d.Year))
+                .range([0, width])
+                .padding(0.2);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d.Value)])
+                .range([height, 0]);
+
+            svg.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x).tickFormat(d3.format("d")))
+                .append("text")
+                .attr("x", width / 2)
+                .attr("y", 40)
+                .attr("class", "label")
+                .text("Año");
+
+            svg.append("g")
+                .call(d3.axisLeft(y))
+                .append("text")
+                .attr("x", -height / 2)
+                .attr("y", -40)
+                .attr("transform", "rotate(-90)")
+                .attr("class", "label")
+                .text("Proporción de Energía por Fuente (%)");
+
+            svg.selectAll(".bar")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", d => x(d.Year))
+                .attr("y", d => y(d.Value))
+                .attr("width", x.bandwidth())
+                .attr("height", d => height - y(d.Value));
+        });
+    </script>
+</body>
+</html>
+
+
+

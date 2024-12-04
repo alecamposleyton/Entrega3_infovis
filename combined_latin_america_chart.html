@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Latin America Renewable Energy Trends</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .chart {
+            margin: 20px auto;
+            width: 80%;
+        }
+        .line {
+            fill: none;
+            stroke-width: 2px;
+        }
+        .axis path, .axis line {
+            fill: none;
+            shape-rendering: crispEdges;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Renewable Energy Trends in Latin America</h1>
+    <div class="chart">
+        <svg width="900" height="500"></svg>
+    </div>
+
+    <script>
+        // Load the combined JSON data
+        d3.json("combined_latin_america_data.json").then(data => {
+            const margin = { top: 20, right: 100, bottom: 50, left: 50 };
+            const width = 900 - margin.left - margin.right;
+            const height = 500 - margin.top - margin.bottom;
+
+            // Parse the data
+            const years = data.map(d => d.Year);
+            const countries = Object.keys(data[0]).filter(key => key !== "Year");
+            const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+            // Create SVG container
+            const svg = d3.select("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // Create scales
+            const x = d3.scaleLinear()
+                .domain(d3.extent(years))
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d3.max(countries.map(c => d[c])))])
+                .range([height, 0]);
+
+            // Add axes
+            svg.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(10).tickFormat(d3.format("d")));
+
+            svg.append("g")
+                .call(d3.axisLeft(y));
+
+            // Add lines for each country
+            countries.forEach(country => {
+                const line = d3.line()
+                    .x(d => x(d.Year))
+                    .y(d => y(d[country]));
+
+                svg.append("path")
+                    .datum(data)
+                    .attr("class", "line")
+                    .attr("d", line)
+                    .style("stroke", color(country));
+            });
+
+            // Add legend
+            svg.selectAll(".legend")
+                .data(countries)
+                .enter()
+                .append("text")
+                .attr("x", width + 20)
+                .attr("y", (d, i) => i * 20)
+                .style("fill", d => color(d))
+                .text(d => d)
+                .attr("text-anchor", "start")
+                .attr("alignment-baseline", "middle");
+        });
+    </script>
+</body>
+</html>
