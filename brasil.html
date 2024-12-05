@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energía Renovable en Brasil (1965-2020)</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        svg {
+            margin: 20px auto;
+            display: block;
+        }
+        .line {
+            fill: none;
+            stroke: steelblue;
+            stroke-width: 3px;
+        }
+        .bar {
+            fill: steelblue;
+        }
+        .axis path,
+        .axis line {
+            fill: none;
+            shape-rendering: crispEdges;
+        }
+        .label {
+            font-size: 12px;
+            text-anchor: middle;
+        }
+    </style>
+</head>
+<body>
+    <h1>Energía Renovable en Brasil (1965-2020)</h1>
+
+    <!-- Gráfico de Líneas -->
+    <h2>Evolución del Uso de Energía Renovable</h2>
+    <p>Proporción de energía renovable como parte del consumo de energía primaria equivalente.</p>
+    <div id="chart-line">
+        <svg width="800" height="400"></svg>
+    </div>
+
+    <!-- Gráficos de Barras -->
+    <h2>Tipos de Energía a través de los años</h2>
+    <h3>Energía Hidroeléctrica</h3>
+    <p>Evolución del uso de energía hidroeléctrica en Brasil.</p>
+    <div id="chart-hydro">
+        <svg width="800" height="400"></svg>
+    </div>
+    <h3>Energía Eólica</h3>
+    <p>Evolución del uso de energía eólica en Brasil.</p>
+    <div id="chart-wind">
+        <svg width="800" height="400"></svg>
+    </div>
+    <h3>Energía Solar</h3>
+    <p>Evolución del uso de energía solar en Brasil.</p>
+    <div id="chart-solar">
+        <svg width="800" height="400"></svg>
+    </div>
+
+    <script>
+        const lineData = [
+            {"Year": 1965, "Value": 27.55},
+            {"Year": 1966, "Value": 27.62},
+            {"Year": 1967, "Value": 27.88},
+            {"Year": 1968, "Value": 25.56},
+            {"Year": 1969, "Value": 25.06},
+            {"Year": 1970, "Value": 26.90},
+            {"Year": 1971, "Value": 26.82},
+            {"Year": 1972, "Value": 27.39},
+            {"Year": 1973, "Value": 26.10},
+            {"Year": 1974, "Value": 26.93},
+            {"Year": 1975, "Value": 28.00},
+            {"Year": 1976, "Value": 29.16},
+            {"Year": 1977, "Value": 31.08},
+            {"Year": 1978, "Value": 31.53},
+            {"Year": 1979, "Value": 33.39},
+            {"Year": 1980, "Value": 36.19},
+            {"Year": 1981, "Value": 37.50},
+            {"Year": 1982, "Value": 39.10},
+            {"Year": 1983, "Value": 41.87},
+            {"Year": 1984, "Value": 43.22},
+            {"Year": 1985, "Value": 43.93},
+            {"Year": 1986, "Value": 43.22},
+            {"Year": 1987, "Value": 42.78},
+            {"Year": 1988, "Value": 44.01},
+            {"Year": 1989, "Value": 44.57},
+            {"Year": 1990, "Value": 45.28},
+            {"Year": 1991, "Value": 45.86},
+            {"Year": 1992, "Value": 44.90},
+            {"Year": 1993, "Value": 45.16},
+            {"Year": 1994, "Value": 44.57},
+            {"Year": 1995, "Value": 44.35},
+            {"Year": 1996, "Value": 44.08},
+            {"Year": 1997, "Value": 43.49},
+            {"Year": 1998, "Value": 43.57},
+            {"Year": 1999, "Value": 43.14},
+            {"Year": 2000, "Value": 43.29},
+            {"Year": 2001, "Value": 39.11},
+            {"Year": 2002, "Value": 40.76},
+            {"Year": 2003, "Value": 42.28},
+            {"Year": 2004, "Value": 42.29},
+            {"Year": 2005, "Value": 43.15},
+            {"Year": 2006, "Value": 43.05},
+            {"Year": 2007, "Value": 44.38},
+            {"Year": 2008, "Value": 43.37},
+            {"Year": 2009, "Value": 46.31},
+            {"Year": 2010, "Value": 44.25},
+            {"Year": 2011, "Value": 43.91},
+            {"Year": 2012, "Value": 42.07},
+            {"Year": 2013, "Value": 39.84},
+            {"Year": 2014, "Value": 38.85},
+            {"Year": 2015, "Value": 40.60},
+            {"Year": 2016, "Value": 43.54},
+            {"Year": 2017, "Value": 43.28},
+            {"Year": 2018, "Value": 46.08},
+            {"Year": 2019, "Value": 47.30},
+            {"Year": 2020, "Value": 49.47},
+            {"Year": 2021, "Value": 46.22}
+        ];
+
+        const energyData = [
+            {"Year": 1965, "Hydro": 27.55, "Wind": 0.0, "Solar": 0.0},
+            {"Year": 1970, "Hydro": 26.28, "Wind": 0.0, "Solar": 0.0},
+            {"Year": 1980, "Hydro": 34.19, "Wind": 0.0, "Solar": 0.0},
+            {"Year": 1990, "Hydro": 40.01, "Wind": 0.0, "Solar": 0.0},
+            {"Year": 2000, "Hydro": 39.24, "Wind": 0.0, "Solar": 0.0},
+            {"Year": 2010, "Hydro": 35.71, "Wind": 0.19, "Solar": 0.0},
+            {"Year": 2020, "Hydro": 31.23, "Wind": 4.49, "Solar": 0.85}
+        ];
+
+        const margin = { top: 20, right: 30, bottom: 50, left: 50 };
+        const width = 800 - margin.left - margin.right;
+        const height = 400 - margin.top - margin.bottom;
+
+        // Gráfico de Líneas
+        const svgLine = d3.select("#chart-line svg")
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        const xLine = d3.scaleLinear()
+            .domain(d3.extent(lineData, d => d.Year))
+            .range([0, width]);
+
+        const yLine = d3.scaleLinear()
+            .domain([0, d3.max(lineData, d => d.Value)])
+            .range([height, 0]);
+
+        svgLine.append("g")
+            .attr("transform", `translate(0,${height})`)
+            .call(d3.axisBottom(xLine).tickFormat(d3.format("d")));
+
+        svgLine.append("g")
+            .call(d3.axisLeft(yLine));
+
+        svgLine.append("path")
+            .datum(lineData)
+            .attr("class", "line")
+            .attr("d", d3.line()
+                .x(d => xLine(d.Year))
+                .y(d => yLine(d.Value))
+            );
+
+        // Gráficos de Barras
+        const energyTypes = ["Hydro", "Wind", "Solar"];
+
+        energyTypes.forEach(energy => {
+            const svg = d3.select(`#chart-${energy.toLowerCase()} svg`)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            const data = energyData.map(d => ({ Year: d.Year, Value: d[energy] || 0 }));
+
+            const x = d3.scaleBand()
+                .domain(data.map(d => d.Year))
+                .range([0, width])
+                .padding(0.2);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d.Value)])
+                .range([height, 0]);
+
+            svg.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x).tickFormat(d3.format("d")));
+
+            svg.append("g")
+                .call(d3.axisLeft(y));
+
+            svg.selectAll(".bar")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", d => x(d.Year))
+                .attr("y", d => y(d.Value))
+                .attr("width", x.bandwidth())
+                .attr("height", d => height - y(d.Value));
+        });
+    </script>
+</body>
+</html>
